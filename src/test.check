@@ -1,0 +1,199 @@
+#include <stdio.h>
+#include <math.h>
+#define SUCCESS 1
+#define FAILURE 0
+#define MIN_EPS 0.000001
+#include "s21_matrix.h"
+
+#test create_matrix_1 
+  int columsA = 3, rowsA = 3;
+  matrix_t A;
+  s21_create_matrix(rowsA, columsA, &A);
+  ck_assert_int_eq(A.columns, columsA);
+  ck_assert_int_eq(A.rows, A.rows);
+  s21_remove_matrix(&A);
+
+
+#test err_create_matrix_1
+  int columsA = 0, rowsA = 1;
+  matrix_t A;
+  int flag = s21_create_matrix(rowsA, columsA, &A);
+  s21_remove_matrix(&A);
+  ck_assert_int_eq(flag, 1);
+
+#test eq_matrix_1
+  int columsA = 3, rowsA = 3;
+  double matrixA[9] = {23, 1, 7, 3, 55, 2, 8, -12, 3};
+  matrix_t A;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  matrix_t B;
+  creat_matrix(rowsA, columsA, matrixA, &B);
+  ck_assert_int_eq(s21_eq_matrix(&A, &B), SUCCESS);
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&B);
+
+
+#test err_eq_matrix_1
+  int columsA = 3, rowsA = 3;
+  double matrixA[9] = {23, 1, 7, 3, 55, 2, 8, -12, 3};
+  matrix_t A;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  matrix_t B;
+  double matrixB[9] = {12, 5, 7, 6, 3, 4, 5, -2, -3};
+  creat_matrix(rowsA, columsA, matrixB, &B);
+  ck_assert_int_eq(s21_eq_matrix(&A, &B), FAILURE);
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&B);
+
+#test err_eq_matrix_2
+  int columsA = 3, rowsA = 2;
+  double matrixA[9] = {2, 5, 7, 6, 3, 4};
+  matrix_t A;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  matrix_t B;
+  int columsB = 3, rowsB = 3;
+  double matrixB[9] = {12, 5, 7, 6, 3, 4, 5, -2, -3};
+  creat_matrix(rowsB, columsB, matrixB, &B);
+  ck_assert_int_eq(s21_eq_matrix(&A, &B), FAILURE);
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&B);
+
+#test sum_matrix_1
+  int columsA = 3, rowsA = 3;
+  double matrixA[9] = {12, 5, 7, 6, 3, 4, 5, -2, -3};
+  matrix_t A, result;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  s21_create_matrix(rowsA, columsA, &result);
+  s21_sum_matrix(&A, &A, &result);
+  for (int i = 0; i < A.rows; i++) {
+    for (int j = 0; j < A.columns; j++) {
+      ck_assert_double_eq(result.matrix[i][j], A.matrix[i][j] * 2);
+      ;
+    }
+  }
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&result);
+
+#test sub_matrix_1
+  int columsA = 3, rowsA = 3;
+  double matrixA[9] = {12, 5, 7, 6, 3, 4, 5, -2, -3};
+  matrix_t A, result;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  s21_create_matrix(rowsA, columsA, &result);
+  s21_sub_matrix(&A, &A, &result);
+  for (int i = 0; i < A.rows; i++) {
+    for (int j = 0; j < A.columns; j++) {
+      ck_assert_double_eq(result.matrix[i][j], 0);
+      ;
+    }
+  }
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&result);
+
+ #test mult_number_1
+  int columsA = 3, rowsA = 3;
+  double matrixA[9] = {12, 5, 7, 6, 3, 4, 5, -2, -3};
+  matrix_t A, result;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  s21_create_matrix(rowsA, columsA, &result);
+  s21_mult_number(&A, 2, &result);
+  for (int i = 0; i < A.rows; i++) {
+    for (int j = 0; j < A.columns; j++) {
+      ck_assert_double_eq(result.matrix[i][j], A.matrix[i][j] * 2);
+      ;
+    }
+  }
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&result);
+
+
+  #test mult_matrix_1
+  int columsA = 2, rowsA = 3;
+  double matrixA[6] = {1, 4, 2, 5, 3, 6};
+  matrix_t A, result;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  matrix_t B;
+  int columsB = 3, rowsB = 2;
+  double matrixB[6] = {1, -1, 1, 2, 3, 4};
+  creat_matrix(rowsB, columsB, matrixB, &B);
+  matrix_t result_2;
+  double result_22[9] = {9, 11, 17, 12, 13, 22, 15, 15, 27};
+  creat_matrix(rowsA, columsB, result_22, &result_2);
+  s21_create_matrix(rowsA, columsB, &result);
+  s21_mult_matrix(&A, &B, &result);
+  for (int i = 0; i < A.rows; i++) {
+    for (int j = 0; j < B.columns; j++) {
+      ck_assert_double_eq(result.matrix[i][j], result_2.matrix[i][j]);
+    }
+  }
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&B);
+  s21_remove_matrix(&result);
+  s21_remove_matrix(&result_2);
+
+
+#test transpose_1
+  double matrixA[6] = {1, 4, 2, 5, 3, 6};
+  matrix_t A, result;
+  creat_matrix(3, 2, matrixA, &A);
+  matrix_t result_2;
+  double result_22[6] = {1, 2, 3, 4, 5, 6};
+  creat_matrix(2, 3, result_22, &result_2);
+  s21_create_matrix(2, 3, &result);
+  s21_transpose(&A, &result);
+  for (int i = 0; i < result.rows; i++) {
+    for (int j = 0; j < result.columns; j++) {
+      ck_assert_double_eq(result.matrix[i][j], result_2.matrix[i][j]);
+    }
+  }
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&result);
+  s21_remove_matrix(&result_2);
+
+#test calc_complements_1
+  int columsA = 3, rowsA = 3;
+  double matrixA[9] = {1, 2, 3, 0, 4, 2, 5, 2, 1};
+  matrix_t A, result;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  matrix_t result_2;
+  double result_22[9] = {0, 10, -20, 4, -14, 8, -8, -2, 4};
+  creat_matrix(rowsA, columsA, result_22, &result_2);
+  s21_create_matrix(rowsA, columsA, &result);
+  s21_calc_complements(&A, &result);
+  for (int i = 0; i < A.rows; i++) {
+    for (int j = 0; j < A.columns; j++) {
+      ck_assert_double_eq(result.matrix[i][j], result_2.matrix[i][j]);
+    }
+  }
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&result);
+  s21_remove_matrix(&result_2);
+
+#test determinant_1
+  int columsA = 3, rowsA = 3;
+  double matrixA[9] = {4, 54, 5, 6, 24, 25, 5, 21, 5}, res = 0;
+  matrix_t A;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  s21_determinant(&A, &res);
+  ck_assert_double_eq(res, 3540);
+  s21_remove_matrix(&A);
+
+
+#test inverse_matrix_1
+  int columsA = 3, rowsA = 3;
+  double matrixA[9] = {2, 5, 7, 6, 3, 4, 5, -2, -3};
+  matrix_t A, result;
+  creat_matrix(rowsA, columsA, matrixA, &A);
+  matrix_t result_2;
+  double result_22[9] = {1, -1, 1, -38, 41, -34, 27, -29, 24};
+  creat_matrix(rowsA, columsA, result_22, &result_2);
+  s21_create_matrix(rowsA, columsA, &result);
+  s21_inverse_matrix(&A, &result);
+  for (int i = 0; i < A.rows; i++) {
+    for (int j = 0; j < A.columns; j++) {
+      ck_assert_double_eq(result.matrix[i][j], result_2.matrix[i][j]);
+    }
+  }
+  s21_remove_matrix(&A);
+  s21_remove_matrix(&result);
+  s21_remove_matrix(&result_2);
